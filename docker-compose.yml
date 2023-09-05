@@ -1,7 +1,7 @@
 version: '3'
 
 networks:
-    nginx-php74-mysql8-node:
+    nginx-stack:
 
 services:
 
@@ -18,7 +18,7 @@ services:
             - php74-service
             - mysql8-service
         networks:
-            - nginx-php74-mysql8-node
+            - nginx-stack
 
     # php
     php74-service:
@@ -31,7 +31,7 @@ services:
         volumes:
             - ./app:/var/www/project
         networks:
-            - nginx-php74-mysql8-node
+            - nginx-stack
 
     # mysql
     mysql8-service:
@@ -42,19 +42,22 @@ services:
         volumes:
             - ./mysql:/var/lib/mysql
         command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-        restart: always # always restart unless stopped manually
+        restart: always
         environment:
             MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: mysql_db
+            MYSQL_USER: mysql_user
             MYSQL_PASSWORD: secret
         networks:
-            - nginx-php74-mysql8-node
+            - nginx-stack
 
-    # node
-    node-service:
-        image: node:latest
-        container_name: node-container
-        volumes:
-            - ./app:/var/www/project
-        working_dir: /var/www/project
+    pma-service:
+        image: phpmyadmin:latest
+        container_name: pma-container
+        ports:
+            - "7070:80"
+        environment:
+            - PMA_ARBITRARY=1
         networks:
-            - nginx-php74-mysql8-node
+            - nginx-stack
+        restart: always
