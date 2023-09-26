@@ -19,6 +19,7 @@ services:
             - mysql8-service
         networks:
             - nginx-stack
+        restart: always
 
     # php
     php74-service:
@@ -32,6 +33,7 @@ services:
             - ./app:/var/www/project
         networks:
             - nginx-stack
+        restart: always
 
     # mysql
     mysql8-service:
